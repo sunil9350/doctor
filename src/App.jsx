@@ -9,6 +9,7 @@ import Myprofile from "./pages/Myprofile";
 import MyAppointments from "./pages/MyAppointment";
 import Appointment from "./pages/Appointment";
 import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
 
 function App() {
   return (
@@ -17,14 +18,15 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/doctors" element={<Doctors />} />
-        <Route path="/doctor/:speciality" element={<Doctors />} />
+        <Route path="/doctors/:speciality" element={<Doctors />} />
         <Route path="/login" element={<Login />} />
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/my-profile" element={<Myprofile />} />
         <Route path="/my-appointment" element={<MyAppointments />} />
-        <Route path="/appointment/:docId" element={<Appointment />} />
+        <Route path="/appointment/:id" element={<Appointment />} />
       </Routes>
+      <Footer />
     </div>
   );
 }

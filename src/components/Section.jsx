@@ -1,14 +1,14 @@
 import React from "react";
 
-function Section(props) {
+function Section({ name, description }) {
   return (
-    <div className="p-5">
+    <div className="p-6">
       <h2 className="text-[var(--black1)] text-2xl font-semibold text-center">
-        {props.name ? props.name : "Find by Speciality"}
+        {name ? name : "Find by Speciality"}
       </h2>
       <p className="text-[var(--grey1)] text-center pt-2">
-        {props.description
-          ? props.description
+        {description
+          ? description
           : "Simply browse through our extensive list of trusted doctors, schedule your appointment hassle-free."}
       </p>
     </div>
