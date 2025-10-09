@@ -10,7 +10,7 @@ import MyAppointments from "./pages/MyAppointment";
 import Appointment from "./pages/Appointment";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
-import MyProfile from "./pages/Myprofile";
+import MyProfile from "./pages/MyProfiles";
 
 function App() {
   return (

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { assets } from "../assets/assets";
 
-function MyProfile() {
+function MyProfiles() {
   const [userData, setUserData] = useState({
     name: "Edward",
     image: assets.profile_pic,
@@ -141,4 +141,4 @@ function MyProfile() {
   );
 }
 
-export default MyProfile;
+export default MyProfiles;
