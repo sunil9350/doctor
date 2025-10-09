@@ -5,11 +5,12 @@ import Doctors from "./pages/Doctors";
 import Login from "./pages/Login";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
-import Myprofile from "./pages/Myprofile";
+
 import MyAppointments from "./pages/MyAppointment";
 import Appointment from "./pages/Appointment";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
+import MyProfile from "./pages/Myprofile";
 
 function App() {
   return (
@@ -22,7 +23,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
-        <Route path="/my-profile" element={<Myprofile />} />
+        <Route path="/my-profile" element={<MyProfile />} />
         <Route path="/my-appointment" element={<MyAppointments />} />
         <Route path="/appointment/:id" element={<Appointment />} />
       </Routes>
