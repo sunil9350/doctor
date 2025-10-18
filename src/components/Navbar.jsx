@@ -1,11 +1,32 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { assets } from "../assets/assets";
 import { NavLink, useNavigate } from "react-router-dom";
+import { AppContext } from "../context/AppContext";
+import axios from "axios";
 
 function Navbar() {
   const navigate = useNavigate();
   const [showMenu, setShowMenu] = useState(false);
-  const [token, setToken] = useState(true);
+  const { token, setToken, setShowLoginModal } = useContext(AppContext);
+
+  const handleLogout = async () => {
+    try {
+      // Call logout API
+      await axios.post("https://doctor-backend-ufgn.onrender.com/logout");
+
+      // Clear token
+      setToken(false);
+
+      // Navigate to home page
+      navigate("/");
+    } catch (error) {
+      console.error("Logout error:", error);
+
+      // Clear token even if API call fails
+      setToken(false);
+      navigate("/");
+    }
+  };
 
   return (
     <div className="flex flex-col gap-2.5 pt-4 md:pt-5 pb-4 md:pb-6 md:flex-row items-center justify-between border-b border-[var(--line1)]">
@@ -52,7 +73,7 @@ function Navbar() {
                 >
                   My Appointment
                 </p>
-                <p onClick={() => setToken(false)} className="cursor-pointer">
+                <p onClick={handleLogout} className="cursor-pointer">
                   Logout
                 </p>
               </div>
@@ -60,7 +81,7 @@ function Navbar() {
           </div>
         ) : (
           <button
-            onClick={() => navigate("/login")}
+            onClick={() => setShowLoginModal(true)}
             className="bg-[var(--blue1)] text-white rounded-4xl py-3 px-5 flex items-center cursor-pointer"
           >
             Create account

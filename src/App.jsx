@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Route, Routes } from "react-router-dom";
 import Home from "./pages/Home";
 import Doctors from "./pages/Doctors";
@@ -11,11 +11,15 @@ import Appointment from "./pages/Appointment";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import MyProfile from "./pages/MyProfiles";
+import { AppContext } from "./context/AppContext";
 
 function App() {
+  const { showLoginModal } = useContext(AppContext);
+
   return (
     <div className="mx-auto px-5">
       <Navbar />
+      {showLoginModal && <Login />}
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/doctors" element={<Doctors />} />

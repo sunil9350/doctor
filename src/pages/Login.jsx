@@ -1,26 +1,81 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
+import axios from "axios";
+import { AppContext } from "../context/AppContext";
 
 function Login() {
-  const [state, setState] = useState("Sign Up");
+  const { setShowLoginModal, setToken } = useContext(AppContext);
+  const [state, setState] = useState("Sign Up"); // can be "Sign Up" or "Login"
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
+  const [message, setMessage] = useState("");
+
+  const url = "https://doctor-backend-ufgn.onrender.com";
 
   const onSubmitHandler = async (event) => {
     event.preventDefault();
+    setMessage(""); // clear any old message
+
+    try {
+      if (state === "Sign Up") {
+        // POST signup API
+        const response = await axios.post(`${url}/signup`, {
+          username: name,
+          email,
+          password,
+        });
+
+        setMessage(response.data.msg || "Account created successfully!");
+
+        // Close modal and set token after successful signup
+        setTimeout(() => {
+          setToken(true);
+          setShowLoginModal(false);
+        }, 1500);
+      } else {
+        // POST login API
+        const response = await axios.post(`${url}/login`, {
+          email,
+          password,
+        });
+
+        setMessage(response.data.msg || "Login successful!");
+
+        // Close modal and set token after successful login
+        setTimeout(() => {
+          setToken(true);
+          setShowLoginModal(false);
+        }, 1500);
+      }
+
+      // Clear form fields
+      setEmail("");
+      setPassword("");
+      setName("");
+    } catch (error) {
+      console.error("Error:", error);
+      setMessage(error.response?.data?.msg || "Something went wrong!");
+    }
   };
+
   return (
-    <div className="flex items-center justify-center mt-10">
-      <div className="shadow-[var(--box-shadow)] border border-[var(--grey5)] p-10 rounded-3xl overflow-hidden">
-        <form action="">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+      <div className="relative shadow-[var(--box-shadow)] border border-[var(--grey5)] p-10 rounded-3xl overflow-hidden w-[350px] bg-white">
+        <button
+          onClick={() => setShowLoginModal(false)}
+          className="absolute top-4 right-4 text-[var(--grey1)] hover:text-[var(--grey2)] text-2xl"
+        >
+          &times;
+        </button>
+        <form onSubmit={onSubmitHandler}>
           <div>
             <h4 className="text-[var(--grey1)] text-2xl font-semibold mb-1">
               {state === "Sign Up" ? "Create Account" : "Login"}
             </h4>
             <p className="text-[var(--grey1)] text-base mb-4">
-              Please {state === "Sign Up" ? "Create Account" : "Login"} to book
-              appointment
+              Please {state === "Sign Up" ? "create an account" : "login"} to
+              book an appointment.
             </p>
 
             {state === "Sign Up" && (
@@ -29,7 +84,8 @@ function Login() {
                 <input
                   className="border border-[var(--grey4)] w-full p-2 mt-1 rounded"
                   type="text"
-                  onChange={(e) => setName(e.target.name)}
+                  placeholder="Enter your name"
+                  onChange={(e) => setName(e.target.value)}
                   value={name}
                   required
                 />
@@ -40,23 +96,37 @@ function Login() {
             <input
               className="border border-[var(--grey4)] w-full p-2 mt-1 rounded"
               type="email"
-              onChange={(e) => setEmail(e.target.name)}
+              placeholder="Enter your email"
+              onChange={(e) => setEmail(e.target.value)}
               value={email}
               required
             />
+
             <p className="text-[var(--grey1)] text-base mt-2">Password</p>
             <input
               className="border border-[var(--grey4)] w-full p-2 mt-1 rounded"
               type="password"
-              onChange={(e) => setPassword(e.target.name)}
+              placeholder="Enter your password"
+              onChange={(e) => setPassword(e.target.value)}
               value={password}
               required
             />
-            <button className="bg-[var(--blue1)] text-white text-center w-full p-3 mt-5 rounded cursor-pointer">
+
+            <button
+              type="submit"
+              className="bg-[var(--blue1)] text-white text-center w-full p-3 mt-5 rounded cursor-pointer"
+            >
               {state === "Sign Up" ? "Create Account" : "Login"}
             </button>
+
+            {message && (
+              <p className="mt-3 text-center text-sm text-[var(--grey1)]">
+                {message}
+              </p>
+            )}
+
             {state === "Sign Up" ? (
-              <p className="mt-2 text-sm text-[var(--grey1)]">
+              <p className="mt-2 text-sm text-[var(--grey1)] text-center">
                 Already have an account?{" "}
                 <span
                   onClick={() => setState("Login")}
@@ -66,13 +136,13 @@ function Login() {
                 </span>
               </p>
             ) : (
-              <p className="mt-2 text-sm text-[var(--grey1)]">
-                Create an new account?{" "}
+              <p className="mt-2 text-sm text-[var(--grey1)] text-center">
+                Don't have an account?{" "}
                 <span
                   onClick={() => setState("Sign Up")}
                   className="text-[var(--blue1)] cursor-pointer underline"
                 >
-                  click here
+                  Sign up here
                 </span>
               </p>
             )}
