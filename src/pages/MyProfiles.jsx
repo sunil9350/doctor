@@ -1,18 +1,79 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { assets } from "../assets/assets";
+import axios from "axios";
+import { API_URL } from "../config";
 
 function MyProfiles() {
+  const storedUser = JSON.parse(localStorage.getItem("userData")) || {};
+
   const [userData, setUserData] = useState({
-    name: "Edward",
+    name: storedUser.name || "",
     image: assets.profile_pic,
-    email: "sunil@gmail.com",
-    phone: "9876543210",
-    address: "12th Cross, Richmond Circle, Church Road, England",
-    gender: "Male",
-    age: "24",
+    email: storedUser.email || "",
+    phone: storedUser.phone || "",
+    address: storedUser.address || "",
+    gender: storedUser.gender || "Male",
+    age: storedUser.age || "",
   });
 
-  const [isEdit, setIsEdit] = useState(true);
+  const [isEdit, setIsEdit] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  // Fetch profile data from /profile endpoint
+  useEffect(() => {
+    const fetchProfileData = async () => {
+      try {
+        const response = await axios.post(
+          `${API_URL}/profile`,
+          {},
+          {
+            withCredentials: true, // Include cookies in request
+          }
+        );
+
+        const profileData = response.data;
+
+        // Combine localStorage data (name, email) with API data (phone, age, address, gender)
+        setUserData((prev) => ({
+          ...prev,
+          phone: profileData.phone || prev.phone,
+          age: profileData.age || prev.age,
+          address: profileData.address || prev.address,
+          gender: profileData.gender || prev.gender,
+        }));
+      } catch (error) {
+        console.error("Error fetching profile:", error);
+        console.error("Error details:", error.response?.data);
+        console.error("Error status:", error.response?.status);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProfileData();
+  }, []);
+
+  // Save profile data to backend
+  const handleSaveProfile = async () => {
+    try {
+      const profileData = {
+        phone: userData.phone,
+        age: userData.age,
+        address: userData.address,
+        gender: userData.gender,
+      };
+
+      await axios.post(`${API_URL}/profile`, profileData, {
+        withCredentials: true, // Include cookies in request
+      });
+
+      setIsEdit(false);
+      alert("Profile updated successfully!");
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      alert("Failed to update profile. Please try again.");
+    }
+  };
 
   return (
     <div className="pt-5">
@@ -93,6 +154,7 @@ function MyProfiles() {
           {isEdit ? (
             <select
               className="border border-[var(--grey4)] w-full p-2 mt-1 rounded"
+              value={userData.gender}
               onChange={(e) =>
                 setUserData((prev) => ({ ...prev, gender: e.target.value }))
               }
@@ -124,7 +186,7 @@ function MyProfiles() {
         {isEdit ? (
           <button
             className="border border-[var(--blue1)] px-4 py-2 rounded-full cursor-pointer"
-            onClick={() => setIsEdit(false)}
+            onClick={handleSaveProfile}
           >
             Save information
           </button>

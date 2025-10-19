@@ -1,17 +1,24 @@
 import React, { useState, useContext } from "react";
 import axios from "axios";
 import { AppContext } from "../context/AppContext";
+import { API_URL } from "../config";
 
 function Login() {
-  const { setShowLoginModal, setToken } = useContext(AppContext);
-  const [state, setState] = useState("Sign Up"); // can be "Sign Up" or "Login"
+  const {
+    setShowLoginModal,
+    setToken,
+    email,
+    setEmail,
+    password,
+    setPassword,
+    name,
+    setName,
+    message,
+    setMessage,
+  } = useContext(AppContext);
+  const [state, setState] = useState("Sign Up");
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [name, setName] = useState("");
-  const [message, setMessage] = useState("");
-
-  const url = "https://doctor-backend-ufgn.onrender.com";
+  const url = API_URL;
 
   const onSubmitHandler = async (event) => {
     event.preventDefault();
@@ -20,13 +27,33 @@ function Login() {
     try {
       if (state === "Sign Up") {
         // POST signup API
-        const response = await axios.post(`${url}/signup`, {
-          username: name,
-          email,
-          password,
-        });
+        const response = await axios.post(
+          `${url}/signup`,
+          {
+            username: name,
+            email,
+            password,
+          },
+          {
+            withCredentials: true,
+          }
+        );
 
         setMessage(response.data.msg || "Account created successfully!");
+
+        // Store user data in localStorage
+        if (response.data.data) {
+          localStorage.setItem(
+            "userData",
+            JSON.stringify({
+              name: response.data.data.username,
+              email: response.data.data.email,
+            })
+          );
+        }
+
+        // Token is set as HttpOnly cookie by backend
+        localStorage.setItem("token", "true");
 
         // Close modal and set token after successful signup
         setTimeout(() => {
@@ -35,12 +62,30 @@ function Login() {
         }, 1500);
       } else {
         // POST login API
-        const response = await axios.post(`${url}/login`, {
-          email,
-          password,
-        });
+        const response = await axios.post(
+          `${url}/login`,
+          {
+            email,
+            password,
+          },
+          {
+            withCredentials: true, // Include cookies in request
+          }
+        );
 
         setMessage(response.data.msg || "Login successful!");
+
+        // Store user data in localStorage
+        localStorage.setItem(
+          "userData",
+          JSON.stringify({
+            name: response.data.data.username,
+            email: response.data.data.email,
+          })
+        );
+
+        // Token is set as HttpOnly cookie by backend
+        localStorage.setItem("token", "true");
 
         // Close modal and set token after successful login
         setTimeout(() => {

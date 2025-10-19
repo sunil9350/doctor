@@ -3,6 +3,7 @@ import { assets } from "../assets/assets";
 import { NavLink, useNavigate } from "react-router-dom";
 import { AppContext } from "../context/AppContext";
 import axios from "axios";
+import { API_URL } from "../config";
 
 function Navbar() {
   const navigate = useNavigate();
@@ -12,9 +13,18 @@ function Navbar() {
   const handleLogout = async () => {
     try {
       // Call logout API
-      await axios.post("https://doctor-backend-ufgn.onrender.com/logout");
+      await axios.post(
+        `${API_URL}/logout`,
+        {},
+        {
+          withCredentials: true,
+        }
+      );
 
-      // Clear token
+      // Clear all localStorage
+      localStorage.clear();
+
+      // Clear token state
       setToken(false);
 
       // Navigate to home page
@@ -22,7 +32,8 @@ function Navbar() {
     } catch (error) {
       console.error("Logout error:", error);
 
-      // Clear token even if API call fails
+      // Clear localStorage and token even if API call fails
+      localStorage.clear();
       setToken(false);
       navigate("/");
     }
@@ -31,7 +42,9 @@ function Navbar() {
   return (
     <div className="flex flex-col gap-2.5 pt-4 md:pt-5 pb-4 md:pb-6 md:flex-row items-center justify-between border-b border-[var(--line1)]">
       <div>
-        <img src={assets.logo} alt="" />
+        <NavLink to={"/"}>
+          <img src={assets.logo} alt="" />
+        </NavLink>
       </div>
       <div>
         <ul className="flex items-center">
