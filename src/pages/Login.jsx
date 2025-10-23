@@ -17,6 +17,7 @@ function Login() {
     setMessage,
   } = useContext(AppContext);
   const [state, setState] = useState("Sign Up");
+  const [messageType, setMessageType] = useState(""); // 'success' | 'error'
 
   const url = API_URL;
 
@@ -40,6 +41,7 @@ function Login() {
         );
 
         setMessage(response.data.msg || "Account created successfully!");
+        setMessageType("success");
 
         // Store user data in localStorage
         if (response.data.data) {
@@ -74,6 +76,7 @@ function Login() {
         );
 
         setMessage(response.data.msg || "Login successful!");
+        setMessageType("success");
 
         // Store user data in localStorage
         localStorage.setItem(
@@ -101,12 +104,13 @@ function Login() {
     } catch (error) {
       console.error("Error:", error);
       setMessage(error.response?.data?.msg || "Something went wrong!");
+      setMessageType("error");
     }
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="relative shadow-[var(--box-shadow)] border border-[var(--grey5)] p-10 rounded-3xl overflow-hidden w-[350px] bg-white">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#00000080] bg-opacity-50">
+      <div className="relative shadow-[var(--box-shadow)] border border-[var(--grey5)] p-10 rounded-3xl overflow-hidden w-[450px] bg-white">
         <button
           onClick={() => setShowLoginModal(false)}
           className="absolute top-4 right-4 text-[var(--grey1)] hover:text-[var(--grey2)] text-2xl"
@@ -165,7 +169,11 @@ function Login() {
             </button>
 
             {message && (
-              <p className="mt-3 text-center text-sm text-[var(--grey1)]">
+              <p
+                className={`mt-3 text-center text-sm ${
+                  messageType === "success" ? "text-green-600" : "text-red-600"
+                }`}
+              >
                 {message}
               </p>
             )}
